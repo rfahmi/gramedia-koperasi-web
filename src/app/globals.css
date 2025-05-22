@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 248, 250, 252;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+  min-height: 100vh;
+}
+
+/* Mobile-first design classes */
+.container-mobile {
+  @apply max-w-md mx-auto px-4 py-2 w-full;
+}
+
+/* Common UI components */
+.card {
+  @apply bg-white rounded-lg shadow p-4 mb-4;
+}
+
+.profile-container {
+  @apply flex flex-row items-center h-16 gap-2;
+}
+
+.profile-text {
+  @apply text-lg font-bold;
+}
+
+.balance-container {
+  @apply flex flex-row gap-2;
+}
+
+.balance-card {
+  @apply bg-white flex-1 flex flex-row rounded-lg p-2 gap-1 m-1 mb-4 shadow;
+}
+
+.balance-icon {
+  @apply flex items-center justify-center pr-1;
+}
+
+.balance-info {
+  @apply flex-1 gap-1.5;
+}
+
+.balance-value {
+  @apply text-base font-bold;
+}
+
+.balance-description {
+  @apply text-sm font-light text-gray-600;
+}
+
+.modal-container {
+  @apply bg-white p-4 pt-4 pb-3 m-4 rounded-lg shadow-lg;
+}
+
+.mb-2 {
+  @apply mb-2;
+}
+
+.modal-button-container {
+  @apply flex flex-row items-center justify-end mt-2 gap-2;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}

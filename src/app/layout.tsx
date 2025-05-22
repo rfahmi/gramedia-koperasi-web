@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+// import { Inter } from "next/font/google";
 import "./globals.css";
 import ReduxProvider from "@/providers/ReduxProvider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AuthMiddleware from "@/components/AuthMiddleware";
 
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Gramedia Koperasi",
@@ -20,11 +21,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+        <link
+          href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet"
+        />
       </head>
-      <body className={inter.className}>
+      <body>
+        {" "}
         <ReduxProvider>
-          {children}
+          {/* AuthMiddleware is an async server component */}
+          <AuthMiddleware>{children}</AuthMiddleware>
           <ToastContainer position="bottom-center" />
         </ReduxProvider>
       </body>

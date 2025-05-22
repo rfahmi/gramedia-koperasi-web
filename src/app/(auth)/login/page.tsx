@@ -1,25 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState, startTransition } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useDispatch } from 'react-redux';
-import { TextField, Button, Paper, Typography, Box, InputAdornment, IconButton } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import { TextField, Button, Paper, Typography, Box } from '@mui/material';
 import { toast } from 'react-toastify';
-import { jwtDecode } from 'jwt-decode';
 import { setAuthenticated, setUserData } from '@/configs/redux/authSlice';
 import { API } from '@/configs/api';
 import { LoginResponse } from '@/configs/api.type';
+import { RootState } from '@/configs/redux/store';
 
 export default function Login() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const [nik, setNik] = useState('');
+  const isAuthenticated = useSelector((state: RootState) => state.auth.authenticated);
+  const [nik, setNik] = useState('004249');
   const [isLoading, setIsLoading] = useState(false);
-  const [showPin, setShowPin] = useState(false);
-  const [pin, setPin] = useState('');
+  const [otp, setOtp] = useState('');
+  const [showOtpInput, setShowOtpInput] = useState(false);
 
-  const handleLogin = async () => {
+  // If already authenticated, redirect to main page
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace('/');
+    }
+  }, [isAuthenticated, router]);
+
+  const handleRequestOtp = async () => {
     if (!nik) {
       toast.error('NIK is required');
       return;
@@ -27,29 +35,65 @@ export default function Login() {
 
     try {
       setIsLoading(true);
+      await API('auth/request-otp', 'POST', {
+        nik,
+      });
+      setShowOtpInput(true);
+      toast.success('OTP has been sent');
+    } catch (error) {
+      console.error('Request OTP error:', error);
+      toast.error('Failed to send OTP. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLogin = async () => {
+    if (!nik || !otp) {
+      toast.error('NIK and OTP are required');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
       const response = await API<LoginResponse>('auth/login', 'POST', {
-        nomor_karyawan: nik,
+        nik,
+        otp: parseInt(otp, 10),
       });
 
-      // Store the token in localStorage
-      localStorage.setItem('token', response.data.token);
+      // Navigate immediately after successful API response
+      startTransition(() => {
+        router.replace('/');
+      });
 
-      // Set up user data
-      dispatch(setUserData({
+      // Update state asynchronously after navigation
+      const userData = {
         nama: response.data.nama,
         nik: response.data.nik,
         noba: response.data.noba,
         pin: response.data.pin,
-        role: 'NASABAH', // Default role, can be updated later if needed
-      }));
+        role: 'NASABAH' as const,
+      };
+
+      // Update localStorage
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('nama', response.data.nama);
+      localStorage.setItem('nik', response.data.nik);
+      localStorage.setItem('noba', response.data.noba);
+      localStorage.setItem('pin', response.data.pin?.toString() || '');
+      localStorage.setItem('role', 'NASABAH');
       
+      // Update Redux state
+      dispatch(setUserData(userData));
       dispatch(setAuthenticated(true));
       
-      // Navigate to the home page
-      router.push('/');
+      // Show success message after everything is done
+      setTimeout(() => {
+        toast.success('Login successful');
+      }, 100);
     } catch (error) {
       console.error('Login error:', error);
-      toast.error('Login failed. Please check your credentials.');
+      toast.error('Login failed. Please check your OTP.');
     } finally {
       setIsLoading(false);
     }
@@ -97,46 +141,66 @@ export default function Login() {
           variant="outlined"
           value={nik}
           onChange={(e) => setNik(e.target.value)}
+          disabled={showOtpInput}
           sx={{ mb: 2 }}
         />
 
-        {pin !== '' && (
-          <TextField
+        {!showOtpInput ? (
+          <Button
             fullWidth
-            label="PIN"
-            type={showPin ? 'text' : 'password'}
-            variant="outlined"
-            value={pin}
-            onChange={(e) => setPin(e.target.value)}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => setShowPin(!showPin)}
-                    edge="end"
-                  >
-                    <span className="material-icons">
-                      {showPin ? 'visibility_off' : 'visibility'}
-                    </span>
-                  </IconButton>
-                </InputAdornment>
-              ),
+            variant="contained"
+            onClick={handleRequestOtp}
+            disabled={isLoading}
+            sx={{
+              backgroundColor: '#1976d2',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: '#1565c0',
+              },
             }}
-            sx={{ mb: 3 }}
-          />
+          >
+            {isLoading ? 'Requesting OTP...' : 'Request OTP'}
+          </Button>
+        ) : (
+          <>
+            <TextField
+              fullWidth
+              label="OTP"
+              variant="outlined"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              type="number"
+              sx={{ mb: 2 }}
+            />
+            <Button
+              fullWidth
+              variant="contained"
+              onClick={handleLogin}
+              disabled={isLoading}
+              sx={{
+                backgroundColor: '#1976d2',
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: '#1565c0',
+                },
+                mb: 2,
+              }}
+            >
+              {isLoading ? 'Logging in...' : 'Login'}
+            </Button>
+            <Button
+              fullWidth
+              variant="text"
+              onClick={() => {
+                setShowOtpInput(false);
+                setOtp('');
+              }}
+              disabled={isLoading}
+            >
+              Change NIK
+            </Button>
+          </>
         )}
-
-        <Button
-          variant="contained"
-          fullWidth
-          color="primary"
-          onClick={handleLogin}
-          disabled={isLoading}
-          sx={{ py: 1.5 }}
-        >
-          {isLoading ? 'Logging in...' : 'Login'}
-        </Button>
       </Paper>
     </Box>
   );

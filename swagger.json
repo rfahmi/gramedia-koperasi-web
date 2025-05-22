@@ -1,0 +1,280 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              },
+              "examples": {
+                "login": {
+                  "value": {
+                    "nik": "1234",
+                    "otp": 1234
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/auth/request-otp": {
+      "post": {
+        "operationId": "AuthController_requestOTP",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OTPRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/karyawan/{noba}": {
+      "get": {
+        "operationId": "KaryawanController_get",
+        "parameters": [
+          {
+            "name": "noba",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Karyawan"
+        ]
+      }
+    },
+    "/karyawan/{noba}/saldo": {
+      "get": {
+        "operationId": "KaryawanController_getSaldo",
+        "parameters": [
+          {
+            "name": "noba",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Karyawan"
+        ]
+      }
+    },
+    "/karyawan/{noba}/change-pin": {
+      "post": {
+        "operationId": "KaryawanController_updatePin",
+        "parameters": [
+          {
+            "name": "noba",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Karyawan"
+        ]
+      }
+    },
+    "/transaction/pinjam": {
+      "get": {
+        "operationId": "TransactionController_listPinjam",
+        "parameters": [
+          {
+            "name": "noba",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "size",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction"
+        ]
+      }
+    },
+    "/transaction/pinjam/apply": {
+      "post": {
+        "operationId": "TransactionController_applyPinjam",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinjamApplyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction"
+        ]
+      }
+    },
+    "/transaction/simpan": {
+      "get": {
+        "operationId": "TransactionController_listSimpan",
+        "parameters": [
+          {
+            "name": "noba",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "size",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction"
+        ]
+      }
+    },
+    "/transaction/angsuran/simulasi": {
+      "post": {
+        "operationId": "TransactionController_simulasiAngsuran",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinjamApplyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Transaction"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Gramedia Koperasi API",
+    "description": "API Documentation for Gramedia Koperasi",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "LoginRequest": {
+        "type": "object",
+        "properties": {}
+      },
+      "OTPRequest": {
+        "type": "object",
+        "properties": {}
+      },
+      "PinjamApplyRequest": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  }
+}

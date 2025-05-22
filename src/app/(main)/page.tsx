@@ -186,13 +186,10 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (!userData.noba) {
-      router.push('/login');
-      return;
+    if (userData.noba) {
+      getDataKaryawan();
+      getDataSaldo();
     }
-
-    getDataKaryawan();
-    getDataSaldo();
   }, [userData]);
 
   return (
